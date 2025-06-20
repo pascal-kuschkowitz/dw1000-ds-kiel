@@ -1,0 +1,44 @@
+---
+- name: Deploy code to Raspberry Pi via pull model
+  hosts: raspi
+  become: false
+  vars:
+    repo_url: "https://github.com/YOUR_USERNAME/YOUR_REPO.git"
+    repo_dir: "/home/pi/myapp"
+    github_user: "YOUR_USERNAME"
+    github_token: "YOUR_GITHUB_PAT"
+    cron_schedule: "*/10 * * * *"
+
+  tasks:
+    - name: Ensure git is installed
+      apt:
+        name: git
+        state: present
+      become: true
+
+    - name: Create .netrc for GitHub authentication
+      copy:
+        dest: "/home/pi/.netrc"
+        content: |
+          machine github.com
+          login {{ github_user }}
+          password {{ github_token }}
+        mode: '0600'
+        owner: pi
+        group: pi
+
+    - name: Clone repo if not present
+      git:
+        repo: "{{ repo_url }}"
+        dest: "{{ repo_dir }}"
+        update: yes
+        force: yes
+        version: main
+        accept_hostkey: yes
+
+    - name: Add cron job to pull latest code every 10 minutes
+      cron:
+        name: "Update repo every 10 minutes"
+        user: pi
+        minute: "*/10"
+        job: "cd {{ repo_dir }} && git pull >> /home/pi/pull.log 2>&1"
