@@ -5,8 +5,8 @@
   vars:
     repo_url: "https://github.com/YOUR_USERNAME/YOUR_REPO.git"
     repo_dir: "/home/pi/myapp"
-    github_user: "YOUR_USERNAME"
-    github_token: "YOUR_GITHUB_PAT"
+    github_user: "pascal-kuschkowitz"
+    github_token: "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"
     cron_schedule: "*/10 * * * *"
 
   tasks:
